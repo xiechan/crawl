@@ -11,9 +11,16 @@ from requests.exceptions import RequestException
 
 def get_one_page(url):
     try:
-        response=requests.get(url)
+        headers={
+               'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+               'Accept - Encoding':'deflate',
+               'Accept-Language':'zh-CN,zh;q=0.9,en;q=0.8',
+               'Connection':'Keep-Alive',
+               'Host':'maoyan.com',
+               'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36 Edge/15.15063'}
+        response=requests.get(url,headers=headers)
         if response.status_code==200:
-            return response
+            return response.text
         return None
     except RequestException:
         return None
@@ -43,10 +50,13 @@ def main(offset):
     url = 'http://maoyan.com/board/4?offset=' + str(offset)
     html = get_one_page(url)
     for item in analysis_one_page(html):
+        print(item)
         write_res(item)
 
 if __name__ == '__main__':
-    pool = Pool()
-    pool.map(main, [i*10 for i in range(10)])
-    pool.close()
-    pool.join()
+    for i in range(10):
+        main(i*10)
+    # pool = Pool()
+    # pool.map(main, [i*10 for i in range(10)])
+    # pool.close()
+    # pool.join()
